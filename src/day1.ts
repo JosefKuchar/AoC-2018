@@ -6,12 +6,13 @@ export function part1(numbers: number[]): number {
 }
 
 export function part2(numbers: number[]): number {
-    let sums = [0];
+    let sums = new Set();
+    sums.add(0);
     let sum = 0;
     for (let i = 0; ; i++) {
         sum += numbers[i % numbers.length];
-        if (sums.some(x => x == sum)) return sum;
-        sums.push(sum);
+        if (sums.has(sum)) return sum;
+        sums.add(sum);
     }
 }
 
