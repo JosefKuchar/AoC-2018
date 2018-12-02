@@ -2,9 +2,10 @@
   "name": "aoc-2018",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register test/*.*"
+    "test": "mocha -r ts-node/register test/*.*",
+    "solve": "tsc && node dist/index"
   },
   "author": "",
   "license": "ISC",
