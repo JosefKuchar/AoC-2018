@@ -25,7 +25,7 @@ describe("Day 1", () => {
         });
     });
 
-    describe("Day 2", () => {
+    describe("Part 2", () => {
         it("+1, -2, +3, +1 first reaches 2 twice", () => {
             const result = part2([1, -2, 3, 1]);
             expect(result).to.equal(2);
