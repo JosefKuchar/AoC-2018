@@ -1,5 +1,3 @@
-import * as fs from "fs";
-
 export function part1(strings: string[]): number {
     let two = 0;
     let three = 0;

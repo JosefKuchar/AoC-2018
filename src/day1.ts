@@ -1,5 +1,3 @@
-import * as fs from "fs";
-
 export function part1(numbers: number[]): number {
     return numbers.reduce((x, y) => x + y);
 }
