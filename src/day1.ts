@@ -13,7 +13,7 @@ export function part2(numbers: number[]): number {
 }
 
 export function solve(input: string) {
-    let numbers = input.split("\n").map(x => parseInt(x));
+    let numbers = input.split('\n').map(x => parseInt(x));
     return {
         part1: part1(numbers),
         part2: part2(numbers)

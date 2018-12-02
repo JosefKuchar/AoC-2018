@@ -23,7 +23,7 @@ export function part2(strings: string[]): string {
     for (let i = 0; i < strings.length; i++) {
         for (let j = i + 1; j < strings.length; j++) {
             let errors = 0;
-            let final = "";
+            let final = String();
             for (let k = 0; k < strings[0].length; k++) {
                 if (strings[i].charAt(k) != strings[j].charAt(k)) {
                     errors++;
@@ -36,10 +36,10 @@ export function part2(strings: string[]): string {
             }
         }
     }
-    return "";
+    return String();
 }
 
 export function solve(input: string) {
-    let strings = input.split("\n");
+    let strings = input.split('\n');
     return { part1: part1(strings), part2: part2(strings) };
 }
