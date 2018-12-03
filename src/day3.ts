@@ -17,33 +17,30 @@ class Area {
 export function solve(input: string) {
     // Parse input
     const areas = input
-        .split("\n")
+        .split("\n") // Lines to array
         .map(x =>
             x
-                .substring(1)
-                .split(/,|x|: | @/)
-                .map(y => parseInt(y))
+                .substring(1) // Remove #
+                .split(/,|x|: | @/) // Extract numbers
+                .map(y => parseInt(y)) // Parse strings to numbers
         )
         .map(x => new Area(x[0], x[1], x[2], x[3], x[4]));
 
     const width = 1000;
-    let fabric: number[][] = new Array(width * width);
+    let fabric: number[][] = new Array(width * width).fill(0).map(x => new Array());
     let areaIds = new Set();
-
-    for (let i = 0; i < fabric.length; i++) {
-        fabric[i] = new Array();
-    }
-
+    
+    // Occupy fabric
     areas.forEach(area => {
         areaIds.add(area.id);
         for (let x = 0; x < area.w; x++) {
             for (let y = 0; y < area.h; y++) {
-                let i = width * (area.x + x) + (area.y + y);
-                fabric[i].push(area.id);
+                fabric[width * (area.x + x) + (area.y + y)].push(area.id);
             }
         }
     });
 
+    // Remove colliding IDs
     fabric.forEach(piece => {
         if (piece.length > 1) {
             piece.forEach(id => {
@@ -52,6 +49,7 @@ export function solve(input: string) {
         }
     });
 
+    // Count collisions
     let collisions = 0;
     fabric.forEach(piece => {
         if (piece.length > 1) collisions++;

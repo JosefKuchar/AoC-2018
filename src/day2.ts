@@ -3,6 +3,7 @@ export function part1(strings: string[]): number {
     let three = 0;
 
     strings.forEach(str => {
+        // Check if string has multiple same characters
         let charCounts = Array();
         for (let i = 0; i < str.length; i++) {
             charCounts.push(0);
@@ -12,6 +13,7 @@ export function part1(strings: string[]): number {
                 }
             }
         }
+
         if (charCounts.some(x => x == 2)) two++;
         if (charCounts.some(x => x == 3)) three++;
     });

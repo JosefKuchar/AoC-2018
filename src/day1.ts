@@ -1,5 +1,5 @@
 export function part1(numbers: number[]): number {
-    return numbers.reduce((x, y) => x + y);
+    return numbers.reduce((x, y) => x + y); // Get sum
 }
 
 export function part2(numbers: number[]): number {
@@ -7,7 +7,7 @@ export function part2(numbers: number[]): number {
     let sum = 0;
     for (let i = 0; ; i++) {
         sum += numbers[i % numbers.length];
-        if (sums.has(sum)) return sum;
+        if (sums.has(sum)) return sum; // Check if the sum has been already seen
         sums.add(sum);
     }
 }
