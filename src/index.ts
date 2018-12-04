@@ -3,9 +3,10 @@ import * as fs from 'fs';
 import * as day1 from './day1';
 import * as day2 from './day2';
 import * as day3 from './day3';
+import * as day4 from './day4';
 import { isNumber } from 'util';
 
-const days = [day1, day2, day3]
+const days = [day1, day2, day3, day4]
 const day = parseInt(process.argv[2]);
 
 if (!isNumber(day) || isNaN(day) || day < 0 || day > days.length) {
