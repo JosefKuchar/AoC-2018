@@ -17,7 +17,7 @@ class Area {
 export function solve(input: string) {
     // Parse input
     const areas = input
-        .split("\n") // Lines to array
+        .split('\n') // Lines to array
         .map(x =>
             x
                 .substring(1) // Remove #

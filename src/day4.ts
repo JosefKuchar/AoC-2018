@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from 'moment';
 
 enum Action {
     Begin,
@@ -58,35 +58,38 @@ export function part2(guards: number[][]) {
 }
 
 export function solve(input: string) {
+    // Parse into records
     let records = input
-        .split("\n")
+        .split('\n')
         .map(x => x.substring(1).split(/] | /))
         .map(x => {
             let action: Action = Action.Begin;
             let id = 0;
             switch (x[2]) {
-                case "Guard":
+                case 'Guard':
                     action = Action.Begin;
                     id = parseInt(x[3].substring(1));
                     break;
-                case "falls":
+                case 'falls':
                     action = Action.Fall;
                     break;
-                case "wakes":
+                case 'wakes':
                     action = Action.Wake;
                     break;
             }
             return new Record(
-                moment(x[0] + x[1], "YYYY-MM-DD HH:mm"),
+                moment(x[0] + x[1], 'YYYY-MM-DD HH:mm'),
                 action,
                 id
             );
         });
-
+    
+    // Sort records by time
     records.sort((x, y) => {
         return x.time.diff(y.time) > 0 ? 1 : -1;
     });
 
+    // Apply records
     let guards: number[][] = new Array();
     let id = 0;
     records.forEach(record => {
@@ -96,17 +99,13 @@ export function solve(input: string) {
             // Fill guard hours if not yet
             if (guards[id] == undefined) {
                 guards[id] = new Array();
-                for (let j = 0; j < 60; j++) {
+                for (let i = 0; i < 60; i++) {
                     guards[id].push(0);
                 }
             }
-        } else if (record.action == Action.Fall) {
+        } else {
             for (let i = record.time.minute(); i < 60; i++) {
-                guards[id][i]++;
-            }
-        } else if (record.action == Action.Wake) {
-            for (let i = record.time.minute(); i < 60; i++) {
-                guards[id][i]--;
+                guards[id][i] += record.action == Action.Fall ? 1 : -1;
             }
         }
     });
