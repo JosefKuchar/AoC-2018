@@ -40,19 +40,15 @@ export function solve(input: string) {
         }
     });
 
-    // Remove colliding IDs
+    // Remove colliding IDs and count collisions
+    let collisions = 0;
     fabric.forEach(piece => {
         if (piece.length > 1) {
+            collisions++;
             piece.forEach(id => {
                 areaIds.delete(id);
             });
         }
-    });
-
-    // Count collisions
-    let collisions = 0;
-    fabric.forEach(piece => {
-        if (piece.length > 1) collisions++;
     });
 
     return { part1: collisions, part2: areaIds.values().next().value };
