@@ -18,18 +18,21 @@ export function solve(input: string) {
     // Parse input
     const areas = input
         .split('\n') // Lines to array
-        .map(x =>
-            x
-                .substring(1) // Remove #
-                .split(/,|x|: | @/) // Extract numbers
-                .map(y => parseInt(y)) // Parse strings to numbers
+        .map(
+            x =>
+                x
+                    .substring(1) // Remove #
+                    .split(/,|x|: | @/) // Extract numbers
+                    .map(y => parseInt(y)) // Parse strings to numbers
         )
         .map(x => new Area(x[0], x[1], x[2], x[3], x[4]));
 
     const width = 1000;
-    let fabric: number[][] = new Array(width * width).fill(0).map(x => new Array());
+    let fabric: number[][] = new Array(width * width)
+        .fill(0)
+        .map(x => new Array());
     let areaIds = new Set();
-    
+
     // Occupy fabric
     areas.forEach(area => {
         areaIds.add(area.id);

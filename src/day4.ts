@@ -28,14 +28,7 @@ export function part1(guards: number[][]) {
         }
     });
 
-    let maxMinute = 0;
-    max = 0;
-    guards[maxId].forEach((minute, index) => {
-        if (minute > max) {
-            max = minute;
-            maxMinute = index;
-        }
-    });
+    let maxMinute = guards[maxId].indexOf(Math.max(...guards[maxId]));
 
     return maxMinute * maxId;
 }
@@ -83,7 +76,7 @@ export function solve(input: string) {
                 id
             );
         });
-    
+
     // Sort records by time
     records.sort((x, y) => {
         return x.time.diff(y.time) > 0 ? 1 : -1;

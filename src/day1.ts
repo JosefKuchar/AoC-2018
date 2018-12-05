@@ -17,5 +17,5 @@ export function solve(input: string) {
     return {
         part1: part1(numbers),
         part2: part2(numbers)
-    }
+    };
 }
