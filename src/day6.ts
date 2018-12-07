@@ -76,8 +76,6 @@ export function solve(input: string, lessThan: number = 10000) {
     let coordinates = input
         .split('\n')
         .map(x => x.split(', ').map(y => parseInt(y)));
-    
-    
     return {
         part1: part1(coordinates),
         part2: part2(coordinates, lessThan)
