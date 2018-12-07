@@ -1,5 +1,3 @@
-import { worker } from "cluster";
-
 class Instruction {
     char: string;
     complete: boolean;
@@ -23,11 +21,7 @@ class Worker {
 
     work() {
         this.time--;
-        if (this.time <= 0 && this.index != -1) {
-            return this.index;
-        } else {
-            return -1;
-        }
+        return this.time <= 0 && this.index != -1 ? this.index : -1;
     }
 
     reset() {
@@ -69,9 +63,7 @@ export function solve(input: string, workerCount = 5, secs = 60) {
     instructions.forEach((instructions, index, arr) => {
         arr[index].before = instructions.before.sort((a, b) => {
             return a > b ? 1 : -1;
-        })
-
-        //console.log(instructions.before);
+        });
     });
 
     let order = '';
@@ -79,13 +71,7 @@ export function solve(input: string, workerCount = 5, secs = 60) {
     let done = false;
     while (!done) {
         for (let i = 0; i < instructions.length; i++) {
-            let complete = true;
-            instructions[i].before.forEach(instruction2 => {
-                if (!instruction2.complete) {
-                    complete = false;
-                    return;
-                }
-            });
+            let complete = !instructions[i].before.some(x => x.complete == false);
 
             if (complete && !orderSet.has(instructions[i].char)) {
                 order += instructions[i].char;
@@ -95,13 +81,7 @@ export function solve(input: string, workerCount = 5, secs = 60) {
             }
         }
 
-        done = true;
-        instructions.forEach(instruction => {
-            if (!instruction.complete) {
-                done = false;
-                return;
-            }
-        });
+        done = !instructions.some(x => x.complete == false);
     }
 
     for (let i = 0; i < instructions.length; i++) {
@@ -116,13 +96,7 @@ export function solve(input: string, workerCount = 5, secs = 60) {
 
     while(!done) {
         for (let i = 0; i < instructions.length; i++) {
-            let complete = true;
-            instructions[i].before.forEach(instruction2 => {
-                if (!instruction2.complete) {
-                    complete = false;
-                    return;
-                }
-            });
+            let complete = !instructions[i].before.some(x => x.complete == false);
 
             if (complete && !orderSet.has(instructions[i].char)) {
                 for(let j = 0; j < workers.length; j++) {
@@ -136,27 +110,15 @@ export function solve(input: string, workerCount = 5, secs = 60) {
             }
         }
 
-        console.log(workers);
-
-        for (let i = 0; i < workers.length; i++) {
-            let result = workers[i].work();
+        workers.forEach(worker => {
+            let result = worker.work();
             if (result >= 0) {
-                console.log(result);
                 instructions[result].complete = true;
-                workers[i].reset();
-            }
-        }
-
-        
-
-        done = true;
-        instructions.forEach(instruction => {
-            if (!instruction.complete) {
-                done = false;
-                return;
+                worker.reset();
             }
         });
 
+        done = !instructions.some(x => x.complete == false);
         seconds++;
     }
 
