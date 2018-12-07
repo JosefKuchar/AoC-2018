@@ -2,7 +2,7 @@ class Instruction {
     char: string;
     complete: boolean;
     before: Instruction[];
-    
+
     constructor(char: string) {
         this.char = char;
         this.complete = false;
@@ -30,9 +30,7 @@ class Worker {
     }
 }
 
-
 export function solve(input: string, workerCount = 5, secs = 60) {
-
     const instructionsRaw = input
         .split('\n')
         .map(x => x.substring(5).split(/[a-z. ]+/));
@@ -44,14 +42,16 @@ export function solve(input: string, workerCount = 5, secs = 60) {
         instructionSet.add(instruction[1]);
     });
 
-    let instructions = Array.from(instructionSet).sort().map(x => new Instruction(x));
+    let instructions = Array.from(instructionSet)
+        .sort()
+        .map(x => new Instruction(x));
 
     instructionsRaw.forEach(instruction => {
-        let target = instructions.find((element) => {
+        let target = instructions.find(element => {
             return element.char == instruction[1];
         });
 
-        let target2 = instructions.find((element) => {
+        let target2 = instructions.find(element => {
             return element.char == instruction[0];
         });
 
@@ -71,7 +71,9 @@ export function solve(input: string, workerCount = 5, secs = 60) {
     let done = false;
     while (!done) {
         for (let i = 0; i < instructions.length; i++) {
-            let complete = !instructions[i].before.some(x => x.complete == false);
+            let complete = !instructions[i].before.some(
+                x => x.complete == false
+            );
 
             if (complete && !orderSet.has(instructions[i].char)) {
                 order += instructions[i].char;
@@ -94,15 +96,18 @@ export function solve(input: string, workerCount = 5, secs = 60) {
 
     let workers = new Array(workerCount).fill(0).map(x => new Worker());
 
-    while(!done) {
+    while (!done) {
         for (let i = 0; i < instructions.length; i++) {
-            let complete = !instructions[i].before.some(x => x.complete == false);
+            let complete = !instructions[i].before.some(
+                x => x.complete == false
+            );
 
             if (complete && !orderSet.has(instructions[i].char)) {
-                for(let j = 0; j < workers.length; j++) {
+                for (let j = 0; j < workers.length; j++) {
                     if (workers[j].index == -1) {
                         workers[j].index = i;
-                        workers[j].time = secs + instructions[i].char.charCodeAt(0) - 64;
+                        workers[j].time =
+                            secs + instructions[i].char.charCodeAt(0) - 64;
                         orderSet.add(instructions[i].char);
                         break;
                     }
@@ -125,5 +130,5 @@ export function solve(input: string, workerCount = 5, secs = 60) {
     return {
         part1: order,
         part2: seconds
-    }
+    };
 }
