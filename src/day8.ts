@@ -1,29 +1,30 @@
-enum Header {
-    Child,
-    Metadata,
+enum Part {
+    ChildCount,
+    MetadataCount,
     Data
 }
 
 class Node {
     children: Node[];
-    childrenCount: number;
+    childrenLeft: number;
     metadata: number[];
-    metadataCount: number;
-    parent: Node | undefined;
+    metadataLeft: number;
 
     constructor() {
         this.children = Array();
         this.metadata = Array();
-        this.childrenCount = 0;
-        this.metadataCount = 0;
+        this.childrenLeft = 0;
+        this.metadataLeft = 0;
     }
 
     addChild(child: Node) {
         this.children.push(child);
+        this.childrenLeft--;
     }
 
     addMetadata(metadata: number) {
         this.metadata.push(metadata);
+        this.metadataLeft--;
     }
 }
 
@@ -31,13 +32,13 @@ function part2(node: Node): number {
     if (node.children.length == 0) {
         return node.metadata.reduce((a, b) => a + b);
     } else {
-        let sum = 0;
-        node.metadata.forEach(index => {
-            if (index - 1 >= 0 && index - 1 < node.children.length) {
-                sum += part2(node.children[index - 1]); 
-            }
-        });
-        
+        let sum = node.metadata.reduce(
+            (acc, x) =>
+                x - 1 >= 0 && x - 1 < node.children.length
+                    ? acc + part2(node.children[x - 1])
+                    : acc,
+            0
+        );
         return sum;
     }
 }
@@ -46,50 +47,32 @@ export function solve(input: string) {
     let data = input.split(' ').map(x => parseInt(x));
     let tree = new Node();
 
-    let current = Header.Child;
-    let currentNode = tree;
+    let currentPart = Part.ChildCount;
+    let current = tree;
     let parents = Array();
 
     let sum = 0;
 
-    for (let i = 0; i < data.length; i++) {
-        if (current == Header.Child) {
-            currentNode.childrenCount = data[i];
-        } else if (current == Header.Metadata) {
-            currentNode.metadataCount = data[i];
+    data.forEach(number => {
+        if (currentPart == Part.ChildCount) {
+            current.childrenLeft = number;
+            currentPart++;
+        } else if (currentPart == Part.MetadataCount) {
+            current.metadataLeft = number;
+            currentPart++;
+        } else if (currentPart == Part.Data && current.childrenLeft > 0) {
+            const child = new Node();
+            current.addChild(child);
+            parents.push(current);
+            current = child;
+            currentPart = Part.MetadataCount;
+            current.childrenLeft = number;
+        } else if (current.metadataLeft > 0) {
+            current.addMetadata(number);
+            sum += number;
+            if (current.metadataLeft == 0) current = parents.pop();
         }
-
-        if (current == Header.Child) {
-            current = Header.Metadata;
-            continue;
-        } else if (current == Header.Metadata) {
-            current = Header.Data;
-            continue;
-        }
-
-        if (current == Header.Data && currentNode.childrenCount > 0) {
-            current = Header.Child;
-            i--;
-            currentNode.childrenCount--;
-            currentNode.addChild(new Node());
-            parents.push(currentNode);
-            currentNode = currentNode.children[currentNode.children.length - 1];
-        } else if (
-            current == Header.Data &&
-            currentNode.childrenCount == 0
-        ) {
-            if (currentNode.metadataCount > 0) {
-                currentNode.addMetadata(data[i]);
-                sum += data[i];
-                currentNode.metadataCount--;
-            } else {
-                if (parents.length > 0) {
-                    currentNode = parents.pop();
-                    i--;
-                }
-            }
-        }
-    }
+    });
 
     return {
         part1: sum,
