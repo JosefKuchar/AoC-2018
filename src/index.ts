@@ -7,9 +7,10 @@ import * as day4 from './day4';
 import * as day5 from './day5';
 import * as day6 from './day6';
 import * as day7 from './day7';
+import * as day8 from './day8';
 import { isNumber } from 'util';
 
-const days = [day1, day2, day3, day4, day5, day6, day7];
+const days = [day1, day2, day3, day4, day5, day6, day7, day8];
 const day = parseInt(process.argv[2]);
 
 if (!isNumber(day) || isNaN(day) || day < 0 || day > days.length) {
