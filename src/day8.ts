@@ -6,8 +6,8 @@ enum Part {
 
 class Node {
     children: Node[];
-    childrenLeft: number;
     metadata: number[];
+    childrenLeft: number;
     metadataLeft: number;
 
     constructor() {
@@ -29,18 +29,15 @@ class Node {
 }
 
 function part2(node: Node): number {
-    if (node.children.length == 0) {
-        return node.metadata.reduce((a, b) => a + b);
-    } else {
-        let sum = node.metadata.reduce(
-            (acc, x) =>
-                x - 1 >= 0 && x - 1 < node.children.length
-                    ? acc + part2(node.children[x - 1])
-                    : acc,
-            0
-        );
-        return sum;
-    }
+    return node.children.length == 0
+        ? node.metadata.reduce((a, b) => a + b)
+        : node.metadata.reduce(
+              (acc, x) =>
+                  x - 1 >= 0 && x - 1 < node.children.length
+                      ? acc + part2(node.children[x - 1])
+                      : acc,
+              0
+          );
 }
 
 export function solve(input: string) {
