@@ -1,34 +1,101 @@
-export function part1(playerCount: number, points: number) {
-    let players = new Array(playerCount).fill(0);
-    let currentPlayer = 0;
-    let currentMarbleIndex = 0;
-    let currentMarble = 1;
-    let circle = [0];
+class Node {
+    prev: Node;
+    next: Node;
+    data: number;
+    private list: List;
 
-    for (let i = 0; i < points; i++) {
-        if (currentMarble % 23 == 0) {
-            players[currentPlayer] += currentMarble;
-            players[currentPlayer] += circle.splice(currentMarbleIndex - 7, 1)[0];
-            currentMarbleIndex -= 7;
+    constructor(data: number, list: List) {
+        this.data = data;
+        this.list = list;
+        this.next = this;
+        this.prev = this;
+    }
 
-            if (currentMarbleIndex < 0) {
-                currentMarbleIndex += circle.length + 1;
-            }
+    add(num: number) {
+        let node = new Node(num, this.list);
+
+        if (this.list.length == 1) {
+            this.next = node;
+            this.prev = node;
+            node.next = this;
+            node.prev = this;
         } else {
-            if (currentMarbleIndex + 1 >= circle.length) {
-                circle.splice(1, 0, currentMarble);
-                currentMarbleIndex = 1
-            } else {
-                circle.splice(currentMarbleIndex + 2, 0, currentMarble);
-                currentMarbleIndex += 2;
-            }
+            let next = this.next;
+            node.prev = this;
+            next.prev = node;
+            node.next = next;
+            this.next = node;
         }
 
-        currentMarble++;
+        this.list.length++;
+
+        return node;
+    }
+
+    remove() {
+        let prev = this.prev;
+        let next = this.next;
+
+        prev.next = next;
+        next.prev = prev;
+
+        this.list.length--;
+
+        return this.data;
+    }
+}
+
+class List {
+    head: Node;
+    length: number;
+
+    constructor() {
+        this.length = 0;
+        this.head = new Node(0, this);
+    }
+
+    add(num: number) {
+        this.head = new Node(num, this);
+        this.head.prev = this.head;
+        this.head.next = this.head;
+        this.length++;
+        
+        return this.head;
+    }
+
+    toString() {
+        let buffer = ''
+        let current = this.head;
+        for (let i = 0; i < this.length; i++) {
+            buffer += current.data.toString() + ' '
+            current = current.next;
+        }
+        return buffer;
+    }
+}
+
+export function part1(playerCount: number, points: number) {
+    let circle = new List();
+    
+    let players = new Array(playerCount).fill(0);
+    let currentPlayer = 0;
+    let currentMarbleNumber = 1;
+    let currentMarble = circle.add(0);
+
+    for (let i = 0; i < points; i++) {
+        if (currentMarbleNumber % 23 == 0) {
+            players[currentPlayer] += currentMarbleNumber;
+            currentMarble = currentMarble.prev.prev.prev.prev.prev.prev;
+            players[currentPlayer] += currentMarble.prev.remove();
+        } else {
+            currentMarble = currentMarble.next.add(currentMarbleNumber);
+        }
+
+        currentMarbleNumber++;
         currentPlayer++;
         currentPlayer %= playerCount;
     }
-
+    
     return players.reduce((acc, x) => x > acc ? x : acc, 0);
 }
 
@@ -38,5 +105,5 @@ export function solve(input: string) {
     return {
         part1: part1(numbers[0], numbers[1]),
         part2: part1(numbers[0], numbers[1] * 100)
-    }
+    };
 }
