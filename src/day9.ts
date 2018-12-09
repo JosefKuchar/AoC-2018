@@ -62,7 +62,6 @@ class List {
 
 export function simulate(playerCount: number, points: number) {
     let circle = new List();
-
     let players = new Array(playerCount).fill(0);
     let currentPlayer = 0;
     let currentMarble = circle.add(0);

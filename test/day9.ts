@@ -1,31 +1,31 @@
 import { expect } from 'chai';
 import 'mocha';
-import { part1 } from '../src/day9';
+import { simulate } from '../src/day9';
 
 describe('Day 9', () => {
     describe('Part 1', () => {
         it('First example', () => {
-            const result = part1(9, 25);
+            const result = simulate(9, 25);
             expect(result).to.equal(32);
         });
         it('10 players; last marble is worth 1618 points: high score is 8317', () => {
-            const result = part1(10, 1618);
+            const result = simulate(10, 1618);
             expect(result).to.equal(8317);
         });
         it('13 players; last marble is worth 7999 points: high score is 146373', () => {
-            const result = part1(13, 7999);
+            const result = simulate(13, 7999);
             expect(result).to.equal(146373);
         });
         it('17 players; last marble is worth 1104 points: high score is 2764', () => {
-            const result = part1(17, 1104);
+            const result = simulate(17, 1104);
             expect(result).to.equal(2764);
         });
         it('21 players; last marble is worth 6111 points: high score is 54718', () => {
-            const result = part1(21, 6111);
+            const result = simulate(21, 6111);
             expect(result).to.equal(54718);
         });
         it('30 players; last marble is worth 5807 points: high score is 37305', () => {
-            const result = part1(30, 5807);
+            const result = simulate(30, 5807);
             expect(result).to.equal(37305);
         });
     });
