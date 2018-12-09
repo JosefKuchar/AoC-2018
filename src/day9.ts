@@ -35,12 +35,8 @@ class Node {
     remove() {
         let prev = this.prev;
         let next = this.next;
-
         prev.next = next;
         next.prev = prev;
-
-        this.list.length--;
-
         return this.data;
     }
 }
@@ -59,51 +55,39 @@ class List {
         this.head.prev = this.head;
         this.head.next = this.head;
         this.length++;
-        
-        return this.head;
-    }
 
-    toString() {
-        let buffer = ''
-        let current = this.head;
-        for (let i = 0; i < this.length; i++) {
-            buffer += current.data.toString() + ' '
-            current = current.next;
-        }
-        return buffer;
+        return this.head;
     }
 }
 
-export function part1(playerCount: number, points: number) {
+export function simulate(playerCount: number, points: number) {
     let circle = new List();
-    
+
     let players = new Array(playerCount).fill(0);
     let currentPlayer = 0;
-    let currentMarbleNumber = 1;
     let currentMarble = circle.add(0);
 
-    for (let i = 0; i < points; i++) {
-        if (currentMarbleNumber % 23 == 0) {
-            players[currentPlayer] += currentMarbleNumber;
+    for (let i = 1; i <= points; i++) {
+        if (i % 23 == 0) {
+            players[currentPlayer] += i;
             currentMarble = currentMarble.prev.prev.prev.prev.prev.prev;
             players[currentPlayer] += currentMarble.prev.remove();
         } else {
-            currentMarble = currentMarble.next.add(currentMarbleNumber);
+            currentMarble = currentMarble.next.add(i);
         }
 
-        currentMarbleNumber++;
         currentPlayer++;
         currentPlayer %= playerCount;
     }
-    
-    return players.reduce((acc, x) => x > acc ? x : acc, 0);
+
+    return players.reduce((acc, x) => (x > acc ? x : acc), 0);
 }
 
 export function solve(input: string) {
     const numbers = input.split(/[a-zA-Z; ]+/).map(x => parseInt(x));
 
     return {
-        part1: part1(numbers[0], numbers[1]),
-        part2: part1(numbers[0], numbers[1] * 100)
+        part1: simulate(numbers[0], numbers[1]),
+        part2: simulate(numbers[0], numbers[1] * 100)
     };
 }
