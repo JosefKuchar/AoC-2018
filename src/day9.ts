@@ -20,23 +20,19 @@ class Node {
             node.next = this;
             node.prev = this;
         } else {
-            let next = this.next;
             node.prev = this;
-            next.prev = node;
-            node.next = next;
+            this.next.prev = node;
+            node.next = this.next;
             this.next = node;
         }
 
         this.list.length++;
-
         return node;
     }
 
     remove() {
-        let prev = this.prev;
-        let next = this.next;
-        prev.next = next;
-        next.prev = prev;
+        this.prev.next = this.next;
+        this.next.prev = this.prev;
         return this.data;
     }
 }
