@@ -1,77 +1,51 @@
-function part1(state: boolean[], rules: boolean[][][], reserve: number) {
-    for (let i = 0; i < 20; i++) {
-        let newState = new Array(state.length).fill(false);
-        for (let j = 2; j < state.length - 2; j++) {
-            for (let a = 0; a < rules.length; a++) {
-                let ok = true;
+function step(state: boolean[], rules: boolean[][][]) {
+    let newState = new Array(state.length).fill(false);
+    for (let j = 2; j < state.length - 2; j++) {
+        for (let rule of rules) {
+            let ok = true;
 
-                for (let k = 0; k < 5; k++) {
-                    if (rules[a][0][k] != state[j - 2 + k]) {
-                        ok = false;
-                        break;
-                    }
-                }
-
-                if (ok == true) {
-                    newState[j] = rules[a][1][0];
+            for (let k = 0; k < 5; k++) {
+                if (rule[0][k] != state[j - 2 + k]) {
+                    ok = false;
                     break;
                 }
             }
-        }
-        state = newState;
-    }
 
-    let sum = 0;
-    for (let i = 0; i < state.length; i++) {
-        if (state[i]) {
-            sum += i - reserve;
+            if (ok == true) {
+                newState[j] = rule[1][0];
+                break;
+            }
         }
     }
-
-    return sum;
+    return newState;
 }
 
-function part2(state: boolean[], rules: boolean[][][], reserve: number) {
-    let reserve2 = 10000;
-    state.unshift(...new Array(reserve2).fill(false));
-    state.push(...new Array(reserve2).fill(false));
-    for (let i = 0; i < 1000; i++) {
-        let newState = new Array(state.length).fill(false);
-        for (let j = 2; j < state.length - 2; j++) {
-            for (let a = 0; a < rules.length; a++) {
-                let ok = true;
-
-                for (let k = 0; k < 5; k++) {
-                    if (rules[a][0][k] != state[j - 2 + k]) {
-                        ok = false;
-                        break;
-                    }
-                }
-
-                if (ok == true) {
-                    newState[j] = rules[a][1][0];
-                    break;
-                }
-            }
-        }
-        state = newState;
-        
-        let sum = 0;
-        for (let i = 0; i < state.length; i++) {
-            if (state[i]) {
-                sum += i - reserve - reserve2;
-            }
-        }
+function part1(state: boolean[], rules: boolean[][][]) {
+    const reserve = 20;
+    state.unshift(...new Array(reserve).fill(false));
+    state.push(...new Array(reserve).fill(false));
+    for (let i = 0; i < 20; i++) {
+        state = step(state, rules);
     }
 
-    let sum = 0;
-    for (let i = 0; i < state.length; i++) {
-        if (state[i]) {
-            sum += i - reserve - reserve2;
-        }
+    return state.reduce((acc, val, i) => val ? acc + i - reserve : acc, 0);
+}
+
+function part2(state: boolean[], rules: boolean[][][]) {
+    let reserve = 2000;
+
+    state.unshift(...new Array(reserve).fill(false));
+    state.push(...new Array(reserve).fill(false));
+
+    for (let i = 0; i < 999; i++) {
+        state = step(state, rules);
     }
 
-    return (50000000000 - 1000) * 5 + sum;
+    let sum = state.reduce((acc, val, i) => (val ? acc + i - reserve : acc), 0);
+    state = step(state, rules);
+    let sum2 = state.reduce((acc, val, i) => (val ? acc + i - reserve : acc), 0);
+
+    return (50000000000 - 1000) * (sum2 - sum) + sum2;
 }
 
 export function solve(input: string) {
@@ -84,12 +58,8 @@ export function solve(input: string) {
         .split('\n')
         .map(x => x.split(' => ').map(y => y.split('').map(z => z == '#')));
 
-    const reserve = 20;
-    state.unshift(...new Array(reserve).fill(false));
-    state.push(...new Array(reserve).fill(false));
-
     return {
-        part1: part1(state, rules, reserve),
-        part2: part2(state, rules, reserve)
+        part1: part1([...state], rules),
+        part2: part2(state, rules)
     };
 }
