@@ -27,23 +27,6 @@ class Cart {
         this.removed = false;
     }
 
-    move() {
-        switch (this.direction) {
-            case Direction.Up:
-                this.y--;
-                break;
-            case Direction.Down:
-                this.y++;
-                break;
-            case Direction.Left:
-                this.x--;
-                break;
-            case Direction.Right:
-                this.x++;
-                break;
-        }
-    }
-
     update(grid: Track[][]) {
         switch (grid[this.x][this.y]) {
             case Track.TurnLeft:
@@ -92,58 +75,57 @@ class Cart {
                 this.intersections++;
                 this.intersections %= 3;
         }
-        this.move();
+        switch (this.direction) {
+            case Direction.Up:
+                this.y--;
+                break;
+            case Direction.Down:
+                this.y++;
+                break;
+            case Direction.Left:
+                this.x--;
+                break;
+            case Direction.Right:
+                this.x++;
+                break;
+        }
     }
 }
 
 function checkCollisions(carts: Cart[], width: number) {
     let seen = new Set();
-
-    for (let cart of carts) {
-        if (seen.has([cart.x, cart.y].join(','))) {
-            return [cart.x, cart.y].join(',');
-        } else {
-            seen.add([cart.x, cart.y].join(','));
-        }
-    }
-    return false;
-}
-
-function checkCollisions2(carts: Cart[], width: number) {
-    let seen = new Set();
-    let collision = false;
+    let collision;
 
     carts.forEach((cart, index) => {
         if (cart.removed == false) {
-            if (seen.has([cart.x, cart.y].join(','))) {
+            if (seen.has(cart.x * width + cart.y)) {
                 let first = carts.find(target => {
                     return target.x == cart.x && target.y == cart.y;
                 });
-                if (first)
-                    carts[carts.indexOf(first)].removed = true;
+                if (first) carts[carts.indexOf(first)].removed = true;
                 carts[index].removed = true;
 
-                collision = true;
+                collision = [cart.x, cart.y].join(',');
                 return;
             } else {
-                seen.add([cart.x, cart.y].join(','));
+                seen.add(cart.x * width + cart.y);
             }
         }
     });
+
     return collision;
 }
 
 export function solve(input: string) {
     const raw = input.split('\n');
     let carts = new Array();
-    let carts2 = new Array();
 
     let grid: Track[][] = new Array(raw[0].length)
         .fill(0)
         .map(x => new Array(raw.length).fill(Track.None));
 
-    for (let y = 0; y < grid[0].length; y++) {
-        for (let x = 0; x < grid.length; x++) {
+    for (let x = 0; x < grid.length; x++) {
+        for (let y = 0; y < grid[0].length; y++) {
             const char = raw[y].charAt(x);
             let type = Track.Straight;
 
@@ -164,7 +146,6 @@ export function solve(input: string) {
                         break;
                 }
                 carts.push(new Cart(x, y, dir));
-                carts2.push(new Cart(x, y, dir));
             } else {
                 switch (char) {
                     case ' ':
@@ -187,8 +168,8 @@ export function solve(input: string) {
     }
 
     let crash = '';
-    let done = false;
-    while (!done) {
+    let firstCrash = true;
+    while (carts.length > 1) {
         carts.sort((a: Cart, b: Cart) => {
             if (a.y > b.y) {
                 return 1;
@@ -198,48 +179,26 @@ export function solve(input: string) {
             return -1;
         });
         for (let i = 0; i < carts.length; i++) {
-            carts[i].update(grid);
-
-            const collision = checkCollisions(carts, grid.length);
-
-            if (collision) {
-                crash = collision;
-                done = true;
-                break;
+            if (carts[i].removed == false) {
+                carts[i].update(grid);
+                const collision = checkCollisions(carts, grid.length);
+                if (collision != undefined && firstCrash) {
+                    crash = collision;
+                    firstCrash = false;
+                }
             }
+        }
+
+        for (let i = carts.length - 1; i >= 0; i--) {
+            if (carts[i].removed) carts.splice(i, 1);
         }
     }
-
-    while (carts2.length > 1) {
-        console.log(carts2.length);
-
-        carts2.sort((a: Cart, b: Cart) => {
-            if (a.y > b.y) {
-                return 1;
-            } else if (a.y == b.y && a.x > b.x) {
-                return 1;
-            }
-            return -1;
-        });
-
-        for (let i = 0; i < carts2.length; i++) {
-            if (carts2[i].removed == false) {
-                carts2[i].update(grid);
-
-                checkCollisions2(carts2, grid.length);
-            }
-        }
-
-        for (let i = carts2.length - 1; i >= 0; i--) {
-            if (carts2[i].removed)
-                carts2.splice(i, 1);
-        }
-    }
-
-    console.log(carts2);
 
     return {
         part1: crash,
-        part2: carts2[0].x.toString() + ',' + carts2[0].y.toString()
+        part2:
+            carts.length == 1
+                ? carts[0].x.toString() + ',' + carts[0].y.toString()
+                : ''
     };
 }
