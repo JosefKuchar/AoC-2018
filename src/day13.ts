@@ -16,6 +16,7 @@ enum Track {
 class Cart {
     direction: Direction;
     intersections: number;
+    removed: boolean;
     x: number;
     y: number;
     constructor(x: number, y: number, direction: Direction) {
@@ -23,6 +24,7 @@ class Cart {
         this.x = x;
         this.y = y;
         this.intersections = 0;
+        this.removed = false;
     }
 
     move() {
@@ -107,6 +109,30 @@ function checkCollisions(carts: Cart[], width: number) {
     return false;
 }
 
+function checkCollisions2(carts: Cart[], width: number) {
+    let seen = new Set();
+    let collision = false;
+
+    carts.forEach((cart, index) => {
+        if (cart.removed == false) {
+            if (seen.has([cart.x, cart.y].join(','))) {
+                let first = carts.find(target => {
+                    return target.x == cart.x && target.y == cart.y;
+                });
+                if (first)
+                    carts[carts.indexOf(first)].removed = true;
+                carts[index].removed = true;
+
+                collision = true;
+                return;
+            } else {
+                seen.add([cart.x, cart.y].join(','));
+            }
+        }
+    });
+    return collision;
+}
+
 export function solve(input: string) {
     const raw = input.split('\n');
     let carts = new Array();
@@ -184,8 +210,36 @@ export function solve(input: string) {
         }
     }
 
+    while (carts2.length > 1) {
+        console.log(carts2.length);
+
+        carts2.sort((a: Cart, b: Cart) => {
+            if (a.y > b.y) {
+                return 1;
+            } else if (a.y == b.y && a.x > b.x) {
+                return 1;
+            }
+            return -1;
+        });
+
+        for (let i = 0; i < carts2.length; i++) {
+            if (carts2[i].removed == false) {
+                carts2[i].update(grid);
+
+                checkCollisions2(carts2, grid.length);
+            }
+        }
+
+        for (let i = carts2.length - 1; i >= 0; i--) {
+            if (carts2[i].removed)
+                carts2.splice(i, 1);
+        }
+    }
+
+    console.log(carts2);
+
     return {
         part1: crash,
-        part2: 0
+        part2: carts2[0].x.toString() + ',' + carts2[0].y.toString()
     };
 }
