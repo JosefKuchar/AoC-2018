@@ -13,6 +13,7 @@ import * as day10 from './day10';
 import * as day11 from './day11';
 import * as day12 from './day12';
 import * as day13 from './day13';
+import * as day14 from './day14';
 import { isNumber } from 'util';
 
 const days = [
@@ -28,7 +29,8 @@ const days = [
     day10,
     day11,
     day12,
-    day13
+    day13,
+    day14
 ];
 
 const day = parseInt(process.argv[2]);
