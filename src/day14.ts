@@ -10,20 +10,24 @@ export function solve(input: string) {
     let patternSeen = 0;
 
     while (recipeCount + 10 > recipes.length || !patternDone) {
-        (recipes[elf1] + recipes[elf2])
-            .toString()
-            .split('')
-            .map(x => parseInt(x))
-            .forEach(x => {
-                if (pattern[patternIndex] == x && !patternDone) {
-                    if (patternIndex == 0) patternSeen = recipes.length;
-                    patternIndex++;
-                    if (patternIndex >= pattern.length) patternDone = true;
-                } else {
-                    patternIndex = 0;
-                }
-                recipes.push(x);
-            });
+        let number = recipes[elf1] + recipes[elf2];
+        let newRecipes = new Array();
+
+        do {
+            newRecipes.push(number % 10);
+            number = Math.floor(number / 10);
+        } while (number > 0);
+
+        newRecipes.reverse().forEach(x => {
+            if (pattern[patternIndex] == x && !patternDone) {
+                if (patternIndex == 0) patternSeen = recipes.length;
+                patternIndex++;
+                if (patternIndex >= pattern.length) patternDone = true;
+            } else {
+                patternIndex = 0;
+            }
+            recipes.push(x);
+        });
 
         elf1 = (elf1 + recipes[elf1] + 1) % recipes.length;
         elf2 = (elf2 + recipes[elf2] + 1) % recipes.length;
