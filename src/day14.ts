@@ -5,42 +5,20 @@ export function solve(input: string) {
     let recipes = [3, 7];
     let elf1 = 0;
     let elf2 = 1;
-
-    while (recipeCount + 10 > recipes.length) {
-        recipes.push(
-            ...(recipes[elf1] + recipes[elf2])
-                .toString()
-                .split('')
-                .map(x => parseInt(x))
-        );
-
-        elf1 = (elf1 + recipes[elf1] + 1) % recipes.length;
-        elf2 = (elf2 + recipes[elf2] + 1) % recipes.length;
-    }
-
-    let p1 = recipes.splice(-10, 10).join('');
-
     let patternIndex = 0;
     let patternDone = false;
     let patternSeen = 0;
-    recipes = [3, 7];
-    elf1 = 0;
-    elf2 = 1;
-    while (!patternDone) {
+
+    while (recipeCount + 10 > recipes.length || !patternDone) {
         (recipes[elf1] + recipes[elf2])
             .toString()
             .split('')
             .map(x => parseInt(x))
             .forEach(x => {
-                if (pattern[patternIndex] == x) {
-                    if (patternIndex == 0) {
-                        patternSeen = recipes.length;
-                    } 
+                if (pattern[patternIndex] == x && !patternDone) {
+                    if (patternIndex == 0) patternSeen = recipes.length;
                     patternIndex++;
-                    if (patternIndex >= pattern.length) {
-                        patternDone = true;
-                        return;
-                    }
+                    if (patternIndex >= pattern.length) patternDone = true;
                 } else {
                     patternIndex = 0;
                 }
@@ -52,7 +30,7 @@ export function solve(input: string) {
     }
 
     return {
-        part1: p1,
+        part1: recipes.splice(recipeCount, 10).join(''),
         part2: patternSeen
     };
 }
