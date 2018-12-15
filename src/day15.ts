@@ -10,11 +10,11 @@ class Unit {
     power: number;
     hp: number;
 
-    constructor(type: Type, x: number, y: number) {
+    constructor(type: Type, x: number, y: number, power = 3) {
         this.type = type;
         this.x = x;
         this.y = y;
-        this.power = 3;
+        this.power = power;
         this.hp = 200;
     }
 
@@ -26,8 +26,7 @@ class Unit {
         }
 
         units.forEach(unit => {
-            if (unit.type != this.type)
-                searchGrid[unit.y][unit.x] = -3;
+            if (unit.type != this.type) searchGrid[unit.y][unit.x] = -3;
         });
 
         if (
@@ -222,7 +221,7 @@ class Unit {
         for (let i = 0; i < units.length; i++) {
             if (
                 units[i].hp == minHp &&
-                this.x - 1== units[i].x &&
+                this.x - 1 == units[i].x &&
                 this.y == units[i].y
             ) {
                 units[i].hp -= this.power;
@@ -284,7 +283,6 @@ export function solve(input: string) {
         })
     );
 
-
     let rounds = 0;
     while (true) {
         for (let j = 0; j < units.length; j++)
@@ -293,34 +291,69 @@ export function solve(input: string) {
         units.sort(sortUnits);
         units = units.filter(x => x.hp > 0);
 
-        if (!(units.some(x => x.type == Type.Elf) && units.some(x => x.type == Type.Goblin))) {
+        if (
+            !(
+                units.some(x => x.type == Type.Elf) &&
+                units.some(x => x.type == Type.Goblin)
+            )
+        ) {
             break;
         }
-        /*
-        for (let y = 0; y < grid.length; y++) {
-            let buffer = '';
-            for (let x = 0; x < grid[0].length; x++) {
-                let cell = grid[y][x];
-                let found = false;
-                for (let unit of units) {
-                    if (unit.x == x && unit.y == y) {
-                        if (unit.hp <= 0) {
-                            buffer += '.';
-                        } else {
-                            buffer += unit.type == Type.Elf ? 'E' : 'G';
-                        }
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    buffer += cell == -1 ? '.' : '#';
-                }
-            }
-            console.log(buffer);
-        }*/
+
         rounds++;
     }
 
-    return { part1: units.reduce((acc, val) => acc + val.hp, 0) * rounds, part2: 0 };
+    let p1 = units.reduce((acc, val) => acc + val.hp, 0) * rounds;
+
+    let power = 3;
+    let rounds2 = 0;
+    while (true) {
+        units = new Array();
+        input.split('\n').map((x, i) =>
+            x.split('').map((y, j) => {
+                if (y == 'E') units.push(new Unit(Type.Elf, j, i, power));
+                else if (y == 'G') units.push(new Unit(Type.Goblin, j, i));
+            })
+        );
+
+        let elves = units.reduce(
+            (acc, val) => (val.type == Type.Elf ? acc + 1 : acc),
+            0
+        );
+        rounds2 = 0;
+
+        while (true) {
+            for (let j = 0; j < units.length; j++)
+                if (units[j].hp > 0)
+                    units[j].update(grid, units.filter(x => x.hp > 0));
+            units.sort(sortUnits);
+            units = units.filter(x => x.hp > 0);
+
+            if (
+                !(
+                    units.some(x => x.type == Type.Elf) &&
+                    units.some(x => x.type == Type.Goblin)
+                )
+            ) {
+                break;
+            }
+
+            rounds2++;
+        }
+
+        let elvesAfter = units.reduce(
+            (acc, val) => (val.type == Type.Elf ? acc + 1 : acc),
+            0
+        );
+
+        if (elvesAfter == elves) {
+            break;
+        } else {
+            power++;
+        }
+    }
+
+    let p2 = units.reduce((acc, val) => acc + val.hp, 0) * rounds2;
+
+    return { part1: p1, part2: p2 };
 }
