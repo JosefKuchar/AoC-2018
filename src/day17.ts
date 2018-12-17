@@ -13,17 +13,20 @@ class Water {
 
     update(grid: Type[][], drops: Water[], sources: number[][]) {
         if (grid[this.x][this.y] == Type.Water) {
-            sources = sources.filter(x => !(x[0] == this.source[0] && x[1] == this.source[1]));
+            sources = sources.filter(
+                x => !(x[0] == this.source[0] && x[1] == this.source[1])
+            );
             this.alive = false;
             return sources;
         }
-        
+
         grid[this.x][this.y] = Type.Wet;
-        // TODO if stuck
 
         if (this.y + 1 > grid[0].length) {
             this.alive = false;
-            sources = sources.filter(x => !(x[0] == this.source[0] && x[1] == this.source[1]));
+            sources = sources.filter(
+                x => !(x[0] == this.source[0] && x[1] == this.source[1])
+            );
         }
 
         if (this.alive) {
@@ -75,11 +78,15 @@ class Water {
                 }
                 if (!left) {
                     sources.push([leftX - 1, this.y]);
-                    sources = sources.filter(x => !(x[0] == this.source[0] && x[1] == this.source[1]));
+                    sources = sources.filter(
+                        x => !(x[0] == this.source[0] && x[1] == this.source[1])
+                    );
                 }
                 if (!right) {
                     sources.push([rightX, this.y]);
-                    sources = sources.filter(x => !(x[0] == this.source[0] && x[1] == this.source[1]));
+                    sources = sources.filter(
+                        x => !(x[0] == this.source[0] && x[1] == this.source[1])
+                    );
                 }
             } else {
                 this.y++;
@@ -107,6 +114,7 @@ export function solve(input: string) {
     let maxY = Number.MIN_SAFE_INTEGER;
     let minX = Number.MAX_SAFE_INTEGER;
     let maxX = Number.MIN_SAFE_INTEGER;
+
     instructions.forEach(instruction => {
         if (instruction[0] == 'x') {
             if (instruction[1] < minX) {
@@ -168,17 +176,18 @@ export function solve(input: string) {
 
     let done = false;
     for (let i = 0; i < 10000; i++) {
-        sources.forEach(source => drops.push(new Water(source[0], source[1], source)));
+        sources.forEach(source =>
+            drops.push(new Water(source[0], source[1], source))
+        );
 
         while (drops.length > 0) {
             drops.forEach(drop => {
-                sources = drop.update(grid, drops, sources)
+                sources = drop.update(grid, drops, sources);
             });
             drops = drops.filter(x => x.alive);
         }
 
-        if (sources.length == 0)
-            sources = [[500 - minX + 2, 1 - minY]];
+        if (sources.length == 0) sources = [[500 - minX + 2, 1 - minY]];
     }
 
     for (let y = 0; y < grid[0].length; y++) {
@@ -200,26 +209,23 @@ export function solve(input: string) {
         }
     }
 
-    let sum = 0;
+    let p1 = 0;
     for (let y = 0; y < grid[0].length; y++) {
         for (let x = 0; x < grid.length; x++) {
             if (grid[x][y] == Type.Water || grid[x][y] == Type.Wet) {
-                sum++
+                p1++;
             }
         }
     }
 
-    let sum2 = 0;
+    let p2 = 0;
     for (let y = 0; y < grid[0].length; y++) {
         for (let x = 0; x < grid.length; x++) {
             if (grid[x][y] == Type.Water) {
-                sum2++;
+                p2++;
             }
         }
     }
 
-    return {
-        part1: sum,
-        part2: sum2
-    };
+    return { part1: p1, part2: p2 };
 }
