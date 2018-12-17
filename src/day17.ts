@@ -1,8 +1,88 @@
+class Water {
+    x: number;
+    y: number;
+    alive: boolean;
+
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+        this.alive = true;
+    }
+
+    update(grid: Type[][], drops: Water[]) {
+        grid[this.x][this.y] = Type.Wet;
+        // TODO if stuck
+
+        if (this.y + 1 > grid[0].length) {
+            this.alive = false;
+            return true;
+        }
+
+        if (this.alive) {
+            if (
+                grid[this.x][this.y + 1] == Type.Clay ||
+                grid[this.x][this.y + 1] == Type.Water
+            ) {
+                this.alive = false;
+
+                let left = true;
+                let right = true;
+                let leftX = 0;
+                let rightX = 0;
+
+                for (let i = 0; ; i--) {
+                    leftX = this.x + i + 1;
+                    if (grid[this.x + i][this.y] == Type.Clay) {
+                        break;
+                    } else if (
+                        grid[this.x + i][this.y + 1] == Type.None ||
+                        grid[this.x + i][this.y + 1] == Type.Wet
+                    ) {
+                        left = false;
+                        break;
+                    } else {
+                        grid[this.x + i][this.y] = Type.Wet;
+                    }
+                }
+
+                for (let i = 0; ; i++) {
+                    rightX = this.x + i;
+                    if (grid[this.x + i][this.y] == Type.Clay) {
+                        break;
+                    } else if (
+                        grid[this.x + i][this.y + 1] == Type.None ||
+                        grid[this.x + i][this.y + 1] == Type.Wet
+                    ) {
+                        right = false;
+                        break;
+                    } else {
+                        grid[this.x + i][this.y] = Type.Wet;
+                    }
+                }
+
+                if (left && right) {
+                    for (let i = leftX; i < rightX; i++) {
+                        grid[i][this.y] = Type.Water;
+                    }
+                }
+                if (!left) {
+                    drops.push(new Water(leftX - 1, this.y));
+                }
+                if (!right) {
+                    drops.push(new Water(rightX, this.y));
+                }
+            } else {
+                this.y++;
+            }
+        }
+        return false;
+    }
+}
+
 enum Type {
     None,
     Wet,
-    WaterLeft,
-    WaterRight,
+    Water,
     Clay
 }
 
@@ -73,49 +153,19 @@ export function solve(input: string) {
         }
     });
 
-    for (let i = 0; i < 50000; i++) {
-        grid[500 - minX + 2][1 - minY] = Type.WaterLeft;
+    let drops: Water[] = new Array();
 
-        for (let j = 0; j < 50; j++) {
-            for (let x = 1; x < grid.length - 1; x++) {
-                for (let y = 0; y < grid[0].length; y++) {
-                    if (
-                        grid[x][y] == Type.WaterLeft ||
-                        grid[x][y] == Type.WaterRight
-                    ) {
-                        if (y + 1 >= grid[0].length) {
-                            grid[x][y] = Type.Wet;
-                        } else if (grid[x][y + 1] <= Type.Wet) {
-                            grid[x][y] = Type.Wet;
-                            grid[x][y + 1] =
-                                Math.random() < 0.5
-                                    ? Type.WaterLeft
-                                    : Type.WaterRight;
-                        } else if (
-                            grid[x - 1][y] <= Type.Wet &&
-                            grid[x + 1][y] <= Type.Wet
-                        ) {
-                            if (grid[x][y] == Type.WaterLeft) {
-                                grid[x - 1][y] = Type.WaterLeft;
-                            }
-                            if (grid[x][y] == Type.WaterRight) {
-                                grid[x + 1][y] = Type.WaterRight;
-                            }
-                            grid[x][y] = Type.Wet;
-                        } else if (grid[x - 1][y] <= Type.Wet) {
-                            grid[x][y] = Type.Wet;
-                            grid[x - 1][y] = Type.WaterLeft;
-                        } else if (grid[x + 1][y] <= Type.Wet) {
-                            grid[x][y] = Type.Wet;
-                            grid[x + 1][y] = Type.WaterRight;
-                        }
-                    }
+    let done = false;
+    for (let i = 0; i < 500; i++) {
+        drops.push(new Water(500 - minX + 2, 1 - minY));
+
+        while (drops.length > 0) {
+            drops.forEach(drop => {
+                if(drop.update(grid, drops)) {
+                    done = true;
                 }
-            }
-        }
-
-        if (i % 100 == 0) {
-            console.log(i);
+            });
+            drops = drops.filter(x => x.alive);
         }
     }
 
