@@ -209,8 +209,17 @@ export function solve(input: string) {
         }
     }
 
+    let sum2 = 0;
+    for (let y = 0; y < grid[0].length; y++) {
+        for (let x = 0; x < grid.length; x++) {
+            if (grid[x][y] == Type.Water) {
+                sum2++;
+            }
+        }
+    }
+
     return {
         part1: sum,
-        part2: 0
+        part2: sum2
     };
 }

@@ -17,4 +17,8 @@ describe('Day 16', () => {
     it('Part 1', () => {
         expect(result.part1).to.equal(57);
     });
+
+    it('Part 2', () => {
+        expect(result.part2).to.equal(29);
+    });
 });
