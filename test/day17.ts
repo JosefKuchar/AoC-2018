@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import 'mocha';
 import { solve } from '../src/day17';
 
-describe('Day 16', () => {
+describe('Day 17', () => {
     const input =
         'x=495, y=2..7\n' +
         'y=7, x=495..501\n' +
