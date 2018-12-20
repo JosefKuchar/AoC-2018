@@ -6,7 +6,7 @@ describe('Day 20', () => {
     describe('Part 1', () => {
         it('^WNE$', () => {
             const result = solve('^WNE$');
-            expect(result.part1).to.equal(10);
+            expect(result.part1).to.equal(3);
         });
         it('^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$', () => {
             const result = solve('^ENNWSWW(NEWS|)SSSEEN(WNSE|)EE(SWEN|)NNN$');
