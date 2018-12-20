@@ -60,9 +60,8 @@ function buildPaths(input: string) {
     const options = getOptions(input);
     let paths: string[] = new Array();
     if (options.length > 1) {
-        options.forEach(option => {
-            paths.push(...buildPaths(option));
-        });
+        for (let i = 0; i < options.length; i++)
+            paths.push(...buildPaths(options[i]));
         return paths;
     }
 
@@ -173,8 +172,6 @@ export function solve(input: string) {
             }
         }
     }
-
-    //console.log(searchGrid, max);
     
     for (let y = 0; y < grid[0].length; y++) {
         let buffer = '';
